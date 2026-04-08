@@ -41,6 +41,7 @@ save it esc:wq enter
 
 
 **Ping kar ke dekho server connect hua ki nhi
+ansible servers -m ping
 
 
 
