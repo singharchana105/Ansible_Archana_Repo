@@ -42,6 +42,92 @@ save it esc:wq enter
 
 **Ping kar ke dekho server connect hua ki nhi
 ansible servers -m ping
+ansible servers -a "free -h" (sare server ka RAM bta dega)
+
+
+**Ab mai chanhti hu mera sara server update ho jaye**
+ansible servers -a "sudo apt update"
+
+**Ek aur chota sa command hota h ansible inventory**
+ansible-inventory --list  (sare server ke pass kon-kon se variable h unka list dikhata hai)
+
+**Next mai Chahti hu ek 3rd server ka group [prd] ho jisme ek server aalg se connect ho
+[prd]
+server_3 ansible_host=3.236.219.237
+bs var ko all kar denge
+[all:vars] 
+ansible_python_interpreter=/usr/bin/python3 
+ansible_user=ubuntu 
+ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
+
+
+**Playbook**
+
+It is a YML file.
+
+chalo ek file banate h
+mkdir plybooks
+cd playbooks
+vim date_play.yml
+
+**Syntax** 
+-
+  name: Chalo banaye Dates playbook (Playbook ka name h kuch v rakh sakte h)
+  hosts: servers
+  tasks:
+    - name: Show date (ye task ka name hai aap kuch v rakh sakte h)
+      command: date
+    - name: Show Uptime
+      command: uptime
+esc:wq enter
+ansible-playbook date_play.yml (ansible-playbook command hai and date_play.yml meri file hai)
+But in this output you did not see date because of verboes
+ansible-playbook -v date_play.yml (add -v and now date will showing)
+
+boommmmmmmmmmmmmm
+
+
+Now ab mujhe Nginx install karna hai **prd** server par
+
+playbook script
+
+-
+  name: Installing Nginx and start it
+  hosts: prd
+  become: yes
+  tasks:
+  - name: Install Nginx
+      apt:          (Apps ko install karne ke liye jo modules use hota hai vo apt hai)
+        name: nginx
+        state: latest
+    - name: Start Nginx
+      service:      ( App ko start karne ke liye jo module use hota h vo service hai)
+        name: nginx
+        state: started
+        enabled: yes
+ 
+ansible-playbook
+      
+
+      
+
+
+
+
+
+      
+
+      
+
+
+
+
+
+
+
+
+
+
 
 
 
