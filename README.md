@@ -1,3 +1,10 @@
+**YML**
+Yet another markup language.
+
+
+
+
+
 # Install Ansible on AWS EC2 Instance: Step-By-Step Guide
 **Step 1 : Create an EC2 instance with ubuntu as operating system**
 **Step 2 : Then connect your EC2 instance and update with the command below**
