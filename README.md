@@ -8,17 +8,6 @@ sudo apt install software-properties-common
 sudo add-apt-repository --yes --update ppa:ansible/ansible
 sudo apt install ansible
 
-**First try to connect manually**
-ansible_server me ssh-keygen command ka use kar public and privite key generate kiye. ls command ka use kar dono key ko dekh sakte hai.
-now cat command ka use kar ke public key copy kar le.
-public key ko baki ke server me dalna hoga so, to EC2 instant conect se server1 login kare and using this command open authorized folder of that server "vim .ssh/authorized_keys" paste public key in it and save it esc:wq enter.
-simulteniously sare server me ye public key ko paste kare.
-
-ab connection dekhne ke liye go to ansible server write ssh -i "private key" ubuntu......... ( ssh vali command ubuntu se jo server coonction ke liye chahiye hota hai usko paste kar de server1 ki)
-
-And bhoomm connection done.
-
-
 **Step 4: Upadte host file**
 sudo vim /etc/ansible/hosts
 
@@ -30,16 +19,30 @@ server_1 ansible_host=44.201.94.229 ( server_1 this is server name, server ki IP
 server_2 ansible_host=44.212.99.50
 server_3 ansible_host=3.236.219.237
 
-**Step 6: ab in server ko connect karna hai to ansible master server me private Key dena padega. Jo hum server connection time banaye the. Ansible Server ko ye key isliye chahiye bcz SSH ke through Ansible connect karta hai baki server se**
+**Step 6 ko 2 tarike se kar sakte hai**
+
+ **First**
+Server ko connect karna hai to ansible master server me private Key dena padega. Jo hum server connection time banaye the. Ansible Server ko ye key isliye chahiye bcz SSH ke through Ansible connect karta hai baki server se**
 mkdir keys
 cd keys
 Now, Go local system where you download your pem file. open cmd and run  scp -i "New_ansible_key.pem" New_ansible_key.pem ubuntu@ec2-3-
 236-71-110.compute-1.amazonaws.com:/home/ubuntu/keys (# /home/ubuntu/keys ye ansible server ka address hai jaha hume .pem file phuchna hai.
 Aur jab aap ansible server par jyese hi run karenge ls command file show ho jayega.
 
+**Second**
+**Try to connect manually**
+ansible_server me ssh-keygen command ka use kar public and privite key generate kiye. ls command ka use kar dono key ko dekh sakte hai.
+now cat command ka use kar ke public key copy kar le.
+public key ko baki ke server me dalna hoga so, to EC2 instant conect se server1 login kare and using this command open authorized folder of that server "vim .ssh/authorized_keys" paste public key in it and save it esc:wq enter.
+simulteniously sare server me ye public key ko paste kare.
+
+ab connection dekhne ke liye go to ansible server write ssh -i "private key" ubuntu......... ( ssh vali command ubuntu se jo server coonction ke liye chahiye hota hai usko paste kar de server1 ki)
+
+And bhoomm connection done.
+
 
 **Ab mujhe key ka location /home/ubuntu/keys ansible ke variable ko btana padega varna ansible ko smjh nhi aata key kaha se uthao.**
-ubuntu@ip-172-31-71-65:~/keys$ sudo vim /etc/ansible/hosts (Open kare)
+sudo vim /etc/ansible/hosts (Open kare)
 Ek variable bana lenge key ko pass karenge,user,interpreter bta deneg
 
 [servers:vars] or aise v define kar sakte h [all:vars] (all means sare server)
