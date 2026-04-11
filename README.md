@@ -29,43 +29,72 @@ server_3 ansible_host=3.236.219.237
 **Step 6 ko 2 tarike se kar sakte hai**
 
  **First**
-To connect servers using Ansible, you need to provide the private key to the Ansible master server. This is the same key that was created when you first launched the server.
-
- 
-Server ko connect karna hai to ansible master server me private Key dena padega. Jo hum server connection time banaye the. Ansible Server ko ye key isliye chahiye bcz SSH ke through Ansible connect karta hai baki server se**
+To connect Ansible servers, you need to provide the private key to the Ansible master server. This is the same key that was created when you first launched the server.
+Steps:
+1. Create a directory for storing keys:
 mkdir keys
-cd keys
-Now, Go local system where you download your pem file. open cmd and run  scp -i "New_ansible_key.pem" New_ansible_key.pem ubuntu@ec2-3-
-236-71-110.compute-1.amazonaws.com:/home/ubuntu/keys (# /home/ubuntu/keys ye ansible server ka address hai jaha hume .pem file phuchna hai.
-Aur jab aap ansible server par jyese hi run karenge ls command file show ho jayega.
+2. Now go to your local system where the .pem file is downloaded.
+   Open Command Prompt (or terminal) and run the following command:
+   scp -i "New_ansible_key.pem" New_ansible_key.pem ubuntu@ec2-3-236-71-110.compute-1.amazonaws.com:/home/ubuntu/keys
+   (Here, /home/ubuntu/keys is the path on the Ansible server where the .pem file will be copied.)
+   Once the file is transferred, log in to your Ansible server and run: ls
+   You will see the .pem file in the directory.
+3. This key will then be used by Ansible to connect to other servers via SSH.
 
-**Second**
+
+**Second Method**
 **Try to connect manually**
-ansible_server me ssh-keygen command ka use kar public and privite key generate kiye. ls command ka use kar dono key ko dekh sakte hai.
-now cat command ka use kar ke public key copy kar le.
-public key ko baki ke server me dalna hoga so, to EC2 instant conect se server1 login kare and using this command open authorized folder of that server "vim .ssh/authorized_keys" paste public key in it and save it esc:wq enter.
-simulteniously sare server me ye public key ko paste kare.
+On the Ansible server, use the ssh-keygen command to generate both the public and private keys. You can verify that both keys you see by using the ls command.
+Next, use the cat command to view .pem file and copy the public key.
+Now, this public key needs to be added to all the target servers:
+1. Log in to **Server1** using EC2 Instance Connect (or SSH).
+2. Open the authorized keys file by running:
+    vim .ssh/authorized_keys
+ 3. Paste the copied public key into this file.
+4. Save and exit by pressing `Esc`, then typing `:wq` and hitting Enter.
 
-ab connection dekhne ke liye go to ansible server write ssh -i "private key" ubuntu......... ( ssh vali command ubuntu se jo server coonction ke liye chahiye hota hai usko paste kar de server1 ki)
+Repeat the same process on all the servers where you want Ansible to connect.
 
-And bhoomm connection done.
+### Verify Connection
+To check the connection:
 
+1. Go back to the Ansible server.
+2. Run the SSH command using the private key:
+    ssh -i "private_key" ubuntu@<server-ip>
+    (Use the correct SSH command for Server1.)
+Once you run the command, the connection will be established successfully—done!
 
-**Ab mujhe key ka location /home/ubuntu/keys ansible ke variable ko btana padega varna ansible ko smjh nhi aata key kaha se uthao.**
-sudo vim /etc/ansible/hosts (Open kare)
-Ek variable bana lenge key ko pass karenge,user,interpreter bta deneg
-
-[servers:vars] or aise v define kar sakte h [all:vars] (all means sare server)
-ansible_python_interpreter=/usr/bin/python3 (agar apko particular python use karna h yaha bta denge. iss var se sare server par python3 hi install hoga)
-ansible_user=ubuntu (particular user bhi define karna hai to kar le)
+**Now you need to tell Ansible /home/ubuntu/keys where the private key is located, otherwise Ansible won’t know which key to use for SSH connections.**
+Steps:
+1. Open the Ansible hosts file:
+sudo vim /etc/ansible/hosts
+2. Define variables for your servers. You can use either:
+[servers:vars] (for a specific group), or [all:vars] (for all servers)
+3. Add the following variables:
+[servers:vars]
+ansible_python_interpreter=/usr/bin/python3
+ansible_user=ubuntu
 ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
+### Explanation:
+ansible_python_interpreter=/usr/bin/python3 → Forces Ansible to use Python 3 on all servers.
+ansible_user=ubuntu → Specifies the user for SSH login.
+ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem → Provides the path of the private key so Ansible can use it for authentication.
+4. Save and exit:
+* Press Esc
+* Type :wq
+* Press Enter
+Now Ansible will automatically use this key and configuration to connect to all your servers.
 
-save it esc:wq enter
-
-
-**Ping kar ke dekho server connect hua ki nhi
+### Verify Server Connection
+To check whether your servers are properly connected, you can use the following Ansible commands:
+1. **Ping all servers:**
 ansible servers -m ping
-ansible servers -a "free -h" (sare server ka RAM bta dega)
+This command checks connectivity. If everything is set up correctly, it will return a **pong** response from each server.
+
+2. **Check memory (RAM) on all servers:**
+ansible servers -a "free -h"
+This command runs the `free -h` command on all servers and shows their memory usage in a human-readable format.
+If both commands work successfully, your Ansible setup is correctly connected to all servers.
 
 
 **Ab mai chanhti hu mera sara server update ho jaye**
@@ -82,6 +111,58 @@ bs var ko all kar denge
 ansible_python_interpreter=/usr/bin/python3 
 ansible_user=ubuntu 
 ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
+
+
+### Now I wants Update All Servers
+If you want to update all your servers, run:
+ansible servers -a "sudo apt update"
+
+This command will execute `apt update` on all servers in the **servers** group.
+
+---
+
+### Check Ansible Inventory Variables
+
+You can see all servers and their variables using:
+
+```bash
+ansible-inventory --list
+```
+
+This will display the complete inventory, including all groups, hosts, and variables assigned to them.
+
+---
+
+### Create a New Group for a Specific Server
+
+Now, if you want to create a separate group called **prd** for a third server, you can define it in your hosts file like this:
+
+```bash
+[prd]
+server_3 ansible_host=3.236.219.237
+```
+
+---
+
+### Define Global Variables for All Servers
+
+To apply the same variables to all servers, use the `[all:vars]` group:
+
+```bash
+[all:vars]
+
+ansible_python_interpreter=/usr/bin/python3
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
+```
+
+This ensures that all servers (including the new **prd** group) use:
+
+* Python 3
+* The `ubuntu` user
+* The specified private key for SSH authentication
+
+Now your setup supports both grouped and global configurations in Ansible.
 
 
 **Playbook**
