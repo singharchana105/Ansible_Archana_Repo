@@ -29,6 +29,9 @@ server_3 ansible_host=3.236.219.237
 **Step 6 ko 2 tarike se kar sakte hai**
 
  **First**
+To connect servers using Ansible, you need to provide the private key to the Ansible master server. This is the same key that was created when you first launched the server.
+
+ 
 Server ko connect karna hai to ansible master server me private Key dena padega. Jo hum server connection time banaye the. Ansible Server ko ye key isliye chahiye bcz SSH ke through Ansible connect karta hai baki server se**
 mkdir keys
 cd keys
