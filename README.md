@@ -96,83 +96,42 @@ ansible servers -a "free -h"
 This command runs the `free -h` command on all servers and shows their memory usage in a human-readable format.
 If both commands work successfully, your Ansible setup is correctly connected to all servers.
 
-
-**Ab mai chanhti hu mera sara server update ho jaye**
-ansible servers -a "sudo apt update"
-
-**Ek aur chota sa command hota h ansible inventory**
-ansible-inventory --list  (sare server ke pass kon-kon se variable h unka list dikhata hai)
-
-**Next mai Chahti hu ek 3rd server ka group [prd] ho jisme ek server aalg se connect ho
-[prd]
-server_3 ansible_host=3.236.219.237
-bs var ko all kar denge
-[all:vars] 
-ansible_python_interpreter=/usr/bin/python3 
-ansible_user=ubuntu 
-ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
-
-
-### Now I wants Update All Servers
-If you want to update all your servers, run:
-ansible servers -a "sudo apt update"
-
+### Now I wants to Update All Servers
+If you want to update all your servers, 
+run: ansible servers -a "sudo apt update"
 This command will execute `apt update` on all servers in the **servers** group.
-
----
-
 ### Check Ansible Inventory Variables
-
-You can see all servers and their variables using:
-
-```bash
-ansible-inventory --list
-```
-
+You can see all servers and their variables using: ansible-inventory --list
 This will display the complete inventory, including all groups, hosts, and variables assigned to them.
-
----
-
 ### Create a New Group for a Specific Server
-
 Now, if you want to create a separate group called **prd** for a third server, you can define it in your hosts file like this:
-
-```bash
 [prd]
 server_3 ansible_host=3.236.219.237
-```
-
----
-
 ### Define Global Variables for All Servers
-
 To apply the same variables to all servers, use the `[all:vars]` group:
-
-```bash
 [all:vars]
-
 ansible_python_interpreter=/usr/bin/python3
 ansible_user=ubuntu
 ansible_ssh_private_key_file=/home/ubuntu/keys/New_ansible_key.pem
-```
 
 This ensures that all servers (including the new **prd** group) use:
-
 * Python 3
-* The `ubuntu` user
+* The ubuntu user
 * The specified private key for SSH authentication
-
 Now your setup supports both grouped and global configurations in Ansible.
 
 
 **Playbook**
+A Playbook is a YAML (.yml) file used in Ansible to define tasks and automation steps.
 
-It is a YML file.
-
-chalo ek file banate h
-mkdir plybooks
+### Create a Playbook File
+1. First, create a directory for playbooks:
+mkdir playbooks
 cd playbooks
+2. Now create a new YAML file:
 vim date_play.yml
+This will open the file in the editor where you can write your Ansible playbook.
+
 
 **Syntax** 
 -
@@ -184,14 +143,17 @@ vim date_play.yml
     - name: Show Uptime
       command: uptime
 esc:wq enter
-ansible-playbook date_play.yml (ansible-playbook command hai and date_play.yml meri file hai)
+run: ansible-playbook date_play.yml (ansible-playbook command hai and date_play.yml meri file hai)
 But in this output you did not see date because of verboes
-ansible-playbook -v date_play.yml (add -v and now date will showing)
+then run: ansible-playbook -v date_play.yml (add -v and now date will showing)
+Adding `-v` (verbose mode) will display the actual results of the commands executed on the servers.
+
+
 
 boommmmmmmmmmmmmm
 
 
-Now ab mujhe Nginx install karna hai **prd** server par
+Now i want Nginx install karna hai **prd** server par
 
 playbook script
 
